@@ -1,0 +1,149 @@
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>북구 득표율 비교</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo&family=Nanum+Gothic&family=Pretendard&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Pretendard', sans-serif;
+      background: #f5f9ff;
+      color: #222;
+    }
+    header {
+      text-align: center;
+      padding: 2rem 1rem 1rem;
+    }
+    header h1 {
+      font-family: 'Nanum Myeongjo', serif;
+      font-size: 2rem;
+    }
+    .buttons {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin: 1rem auto 2rem;
+      flex-wrap: wrap;
+    }
+    .btn {
+      background: white;
+      border: 2px solid #007BFF;
+      color: #007BFF;
+      font-weight: bold;
+      padding: 0.5rem 1rem;
+      border-radius: 999px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    .btn:hover, .btn.active {
+      background: #007BFF;
+      color: white;
+    }
+    #map {
+      height: 60vh;
+      width: 90vw;
+      margin: 0 auto 2rem;
+      border-radius: 20px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.08);
+    }
+    .ranking-table {
+      width: 90vw;
+      margin: 0 auto 4rem;
+      border-collapse: collapse;
+      font-size: 0.95rem;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 0 8px rgba(0,0,0,0.05);
+    }
+    .ranking-table th, .ranking-table td {
+      padding: 0.8rem 1rem;
+      text-align: left;
+    }
+    .ranking-table th {
+      background: #e9f2ff;
+      color: #222;
+      font-weight: bold;
+    }
+    .ranking-table tr:nth-child(even) { background: #f9fcff; }
+  </style>
+</head>
+<body>
+  <header><div style='text-align:center;padding:0.5rem;font-size:0.9rem'><a href=".html">전국</a> | <a href="남구.html">남구</a> | <a href="달서구.html">달서구</a> | <a href="달성군.html">달성군</a> | <a href="동구.html">동구</a> | <a href="북구.html">북구</a> | <a href="서구.html">서구</a> | <a href="수성구.html">수성구</a> | <a href="중구.html">중구</a></div>
+    <h1>북구 득표율 비교</h1>
+    <div class="buttons">
+      <button class="btn active" onclick="showMap('19')">19대 대선</button>
+      <button class="btn" onclick="showMap('20')">20대 대선</button>
+      <button class="btn" onclick="showMap('compare')">비교</button>
+    </div>
+  </header>
+
+  <div id="map"></div>
+
+  <table class="ranking-table">
+    <thead>
+      <tr><th>순위</th><th>행정동</th><th>득표율</th></tr>
+    </thead>
+    <tbody id="ranking-body"></tbody>
+  </table>
+
+  <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+  <script>
+    let map = L.map('map').setView([35.8714, 128.6014], 11);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 18,
+      attribution: '© OpenStreetMap'
+    }).addTo(map);
+
+    let geoLayer;
+    function showMap(view) {
+      document.querySelectorAll('.btn').forEach(b => b.classList.remove('active'));
+      event.target.classList.add('active');
+      if (geoLayer) map.removeLayer(geoLayer);
+
+      fetch("data/geo_" + view + "_북구.json")
+        .then(res => res.json())
+        .then(data => {
+          geoLayer = L.geoJSON(data, {
+            style: f => {
+              const key = view === '19' ? 'color19' : view === '20' ? 'color20' : 'compareColor';
+              return {
+                color: '#888',
+                weight: 1,
+                fillColor: f.properties[key] || '#ccc',
+                fillOpacity: 0.85
+              };
+            },
+            onEachFeature: (f, layer) => {
+              const name = f.properties.adm_nm;
+              const rate = f.properties['rate' + view] ?? f.properties['rateCompare'];
+              layer.bindTooltip(`${name}<br>${rate}%`);
+            }
+          }).addTo(map);
+        });
+
+      fetch("data/ranking_" + view + "_북구.json")
+        .then(res => res.json())
+        .then(rows => {
+          const tbody = document.getElementById('ranking-body');
+          tbody.innerHTML = '';
+          rows.forEach((r, i) => {
+            const tr = document.createElement('tr');
+            tr.style.backgroundColor = r.color;
+            const [r_, g, b] = r.color.match(/\d+/g).map(Number);
+            const lum = 0.299 * r_ + 0.587 * g + 0.114 * b;
+            tr.style.color = lum < 160 ? '#fff' : '#000';
+            tr.innerHTML = `<td>${i+1}</td><td>${r.name}</td><td>${r.rate}%</td>`;
+            tbody.appendChild(tr);
+          });
+        });
+    }
+
+    showMap('19');
+  </script>
+</body>
+</html>
