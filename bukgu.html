@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>BUKGU 득표율 비교</title>
+  <title>북구 득표율 비교</title>
   <link href="https://fonts.googleapis.com/css2?family=Pretendard&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
   <style>
@@ -351,6 +351,39 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 });
+</script>
+<script>
+  let mapInteractive = false;
+
+  const map = L.map('map', {
+    dragging: false,
+    tap: false,
+    touchZoom: false,
+    scrollWheelZoom: false,
+    doubleClickZoom: false,
+    boxZoom: false,
+    keyboard: false
+  }).setView([35.8682, 128.5998], 13); // 기본 위치 (대구 중구 근처)
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; OpenStreetMap contributors'
+  }).addTo(map);
+
+  // 클릭하면 조작 on/off
+  map.on('click', () => {
+    mapInteractive = !mapInteractive;
+    if (mapInteractive) {
+      map.dragging.enable();
+      map.touchZoom.enable();
+      map.doubleClickZoom.enable();
+      map.scrollWheelZoom.enable();
+    } else {
+      map.dragging.disable();
+      map.touchZoom.disable();
+      map.doubleClickZoom.disable();
+      map.scrollWheelZoom.disable();
+    }
+  });
 </script>
 
 </body>
