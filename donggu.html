@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>DONGGU 득표율 비교</title>
+  <title>동구 득표율 비교</title>
   <link href="https://fonts.googleapis.com/css2?family=Pretendard&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
   <style>
@@ -67,7 +67,7 @@
     }
     #map {
       height: 60vh;
-      width: 90vw;
+      width: 40vw;
       margin: 2rem auto;
       border-radius: 20px;
       box-shadow: 0 0 15px rgba(0,0,0,0.08);
@@ -130,12 +130,12 @@
       Kakao.Link.sendDefault({
         objectType: 'feed',
         content: {
-          title: '대구 득표율 비교',
+          title: '대구 동구 득표율',
           description: '19대·20대 대구지역 더불어민주당 득표율 한눈에 보기',
           imageUrl: 'https://theminjoodaegu.co.kr/share_thumb.png',
-          link: { mobileWebUrl: 'https://theminjoodaegu.co.kr/', webUrl: 'https://theminjoodaegu.co.kr/' }
+          link: { mobileWebUrl: 'http://bluenew.life/compare/dalseogu.html', webUrl: 'http://bluenew.life/compare/donggu.html' }
         },
-        buttons: [{ title: '보러가기', link: { mobileWebUrl: 'https://theminjoodaegu.co.kr/', webUrl: 'https://theminjoodaegu.co.kr/' } }]
+        buttons: [{ title: '보러가기', link: { mobileWebUrl: 'http://bluenew.life/compare/donggu.html', webUrl: 'http://bluenew.life/compare/donggu.html' } }]
       });
     }
   </script>
